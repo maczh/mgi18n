@@ -8,6 +8,7 @@ import (
 	"github.com/maczh/mgcache"
 	"github.com/maczh/mgconfig"
 	"github.com/maczh/mgerr"
+	"github.com/maczh/mgerr/errcode"
 	"github.com/maczh/mgi18n/xlang"
 	"reflect"
 	"strconv"
@@ -150,4 +151,12 @@ func Format(messageId string, args ...interface{}) string {
 		format = strings.Replace(format, "{}", str, 1)
 	}
 	return format
+}
+
+func ParamLostError(param string) mgresult.Result {
+	return mgresult.Error(errcode.REQUEST_PARAMETER_LOST, Format("参数不可为空", param))
+}
+
+func ParamError(param string) mgresult.Result {
+	return mgresult.Error(errcode.REQUEST_PARAMETER_LOST, Format("参数错误", param))
 }
