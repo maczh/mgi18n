@@ -1,0 +1,28 @@
+go:
+  application:
+    name: test
+    port: 8062
+    debug: true
+  config:
+    server: http://59.56.77.23:58848/
+    server_type: nacos
+    env: test
+    type: .yml
+    mid: "-"
+    used: nacos
+    prefix:
+      mysql: mysql-openapi-admin
+      mongodb: mongo-openapi-admin
+      redis: redis-openapi-admin
+      ssdb: ssdb
+      rabbitmq: rabbitmq
+      nacos: nacos-openapi
+      influxdb: influxdb
+  log:
+    req:
+  logger:
+    level: debug
+    out: console
+#    file: /opt/logs/openapi-admin
+  xlang:
+    appName: test

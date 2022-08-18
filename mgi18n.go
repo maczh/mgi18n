@@ -44,17 +44,17 @@ func initCache(version string) {
 		logs.Error(err.Error())
 		return
 	}
-	for k,v := range langs {
-		mgcache.OnGetCache("x-lang").Add(k,v, 0)
+	for k, v := range langs {
+		mgcache.OnGetCache("x-lang").Add(k, v, 0)
 	}
-	mgcache.OnGetCache("x-lang").Add("success:zh-cn","成功",0)
-	mgcache.OnGetCache("x-lang").Add("success:en-us","Success",0)
-	mgcache.OnGetCache("x-lang").Add("success:zh-tw","成功",0)
-	mgcache.OnGetCache("x-lang").Add("success:ja","成功",0)
-	mgcache.OnGetCache("x-lang").Add("success:fr","Succès",0)
-	mgcache.OnGetCache("x-lang").Add("success:it","Successo",0)
-	mgcache.OnGetCache("x-lang").Add("success:de","der Erfolg",0)
-	mgcache.OnGetCache("x-lang").Add("success:ko","성공",0)
+	mgcache.OnGetCache("x-lang").Add("success:zh-cn", "成功", 0)
+	mgcache.OnGetCache("x-lang").Add("success:en-us", "Success", 0)
+	mgcache.OnGetCache("x-lang").Add("success:zh-tw", "成功", 0)
+	mgcache.OnGetCache("x-lang").Add("success:ja", "成功", 0)
+	mgcache.OnGetCache("x-lang").Add("success:fr", "Succès", 0)
+	mgcache.OnGetCache("x-lang").Add("success:it", "Successo", 0)
+	mgcache.OnGetCache("x-lang").Add("success:de", "der Erfolg", 0)
+	mgcache.OnGetCache("x-lang").Add("success:ko", "성공", 0)
 }
 
 func GetXLangString(stringId, lang string) string {
@@ -86,12 +86,11 @@ func reflushXLangCache() {
 	}
 }
 
-
-func ErrorXLang(code int, messageId string) mgresult.Result {
+func Error(code int, messageId string) mgresult.Result {
 	return mgresult.Error(code, String(messageId))
 }
 
-func ErrorXLangWithMsg(code int, messageId, msg string) mgresult.Result {
+func ErrorWithMsg(code int, messageId, msg string) mgresult.Result {
 	return mgresult.Error(code, fmt.Sprintf("%s:%s", String(messageId), msg))
 }
 
@@ -99,12 +98,12 @@ func Success(data interface{}) mgresult.Result {
 	return mgresult.SuccessWithMsg(String("success"), data)
 }
 
-func SuccessWithPage(data interface{},count, index, size, total int) mgresult.Result {
+func SuccessWithPage(data interface{}, count, index, size, total int) mgresult.Result {
 	return mgresult.Result{
 		Status: 1,
 		Msg:    String("success"),
 		Data:   data,
-		Page:   &mgresult.ResultPage{
+		Page: &mgresult.ResultPage{
 			Count: count,
 			Index: index,
 			Size:  size,
@@ -113,8 +112,7 @@ func SuccessWithPage(data interface{},count, index, size, total int) mgresult.Re
 	}
 }
 
-
-func String(messageId string) string{
+func String(messageId string) string {
 	lang := mgerr.GetCurrentLanguage()
-	return  GetXLangString(messageId, lang)
+	return GetXLangString(messageId, lang)
 }
