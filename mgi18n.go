@@ -1,6 +1,7 @@
 package mgi18n
 
 import (
+	"encoding/json"
 	"fmt"
 	"github.com/maczh/gintool/mgresult"
 	"github.com/maczh/logs"
@@ -8,6 +9,9 @@ import (
 	"github.com/maczh/mgconfig"
 	"github.com/maczh/mgerr"
 	"github.com/maczh/mgi18n/xlang"
+	"reflect"
+	"strconv"
+	"strings"
 	"time"
 )
 
@@ -32,14 +36,15 @@ func Init() {
 	ticker := time.NewTicker(time.Minute * 5)
 	go func() {
 		for _ = range ticker.C {
-			reflushXLangCache()
+			refreshXLangCache()
 		}
 	}()
 }
 
 func initCache(version string) {
 	mgcache.OnGetCache("x-lang").Add("version", version, 0)
-	langs, err := xlang.GetAppXLangStringsAll(appName)
+	//从公共应用加载公共常用多语言数据
+	langs, err := xlang.GetAppXLangStringsAll("default")
 	if err != nil {
 		logs.Error(err.Error())
 		return
@@ -47,14 +52,16 @@ func initCache(version string) {
 	for k, v := range langs {
 		mgcache.OnGetCache("x-lang").Add(k, v, 0)
 	}
-	mgcache.OnGetCache("x-lang").Add("success:zh-cn", "成功", 0)
-	mgcache.OnGetCache("x-lang").Add("success:en-us", "Success", 0)
-	mgcache.OnGetCache("x-lang").Add("success:zh-tw", "成功", 0)
-	mgcache.OnGetCache("x-lang").Add("success:ja", "成功", 0)
-	mgcache.OnGetCache("x-lang").Add("success:fr", "Succès", 0)
-	mgcache.OnGetCache("x-lang").Add("success:it", "Successo", 0)
-	mgcache.OnGetCache("x-lang").Add("success:de", "der Erfolg", 0)
-	mgcache.OnGetCache("x-lang").Add("success:ko", "성공", 0)
+
+	//加载本程序所有多语言字符串数据
+	langs, err = xlang.GetAppXLangStringsAll(appName)
+	if err != nil {
+		logs.Error(err.Error())
+		return
+	}
+	for k, v := range langs {
+		mgcache.OnGetCache("x-lang").Add(k, v, 0)
+	}
 }
 
 func GetXLangString(stringId, lang string) string {
@@ -71,7 +78,7 @@ func GetXLangString(stringId, lang string) string {
 	return ""
 }
 
-func reflushXLangCache() {
+func refreshXLangCache() {
 	version, err := xlang.GetAppXLangVersion(appName)
 	if err != nil {
 		logs.Error(err.Error())
@@ -80,7 +87,6 @@ func reflushXLangCache() {
 	oldVersion, ok := mgcache.OnGetCache("x-lang").Value("version")
 	if ok {
 		if oldVersion != version {
-			mgcache.OnGetCache("x-lang").Clear()
 			initCache(version)
 		}
 	}
@@ -112,7 +118,36 @@ func SuccessWithPage(data interface{}, count, index, size, total int) mgresult.R
 	}
 }
 
+//String 将messageId根据当前协程X-Lang参数转换成当前语言字符串
 func String(messageId string) string {
 	lang := mgerr.GetCurrentLanguage()
 	return GetXLangString(messageId, lang)
+}
+
+//Format 格式化数据，messageId对应的内容为带{}的模板
+func Format(messageId string, args ...interface{}) string {
+	format := String(messageId)
+	for _, value := range args {
+		str := ""
+		switch value.(type) {
+		case bool:
+			str = strconv.FormatBool(value.(bool))
+		case float32, float64:
+			str = strconv.FormatFloat(value.(float64), 'f', 6, 32)
+		case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64, uintptr:
+			str = strconv.Itoa(value.(int))
+		case string:
+			str = value.(string)
+		case []byte:
+			str = string(value.([]byte))
+		case reflect.Value:
+			j, _ := json.Marshal(value)
+			str = string(j)
+		default:
+			j, _ := json.Marshal(value)
+			str = string(j)
+		}
+		format = strings.Replace(format, "{}", str, 1)
+	}
+	return format
 }
