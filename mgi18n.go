@@ -160,3 +160,13 @@ func ParamLostError(param string) mgresult.Result {
 func ParamError(param string) mgresult.Result {
 	return mgresult.Error(errcode.REQUEST_PARAMETER_LOST, Format("参数错误", param))
 }
+
+func CheckParametersLost(params map[string]string, paramNames ...string) mgresult.Result {
+	for _, param := range paramNames {
+		v := params[param]
+		if v == "" {
+			return ParamLostError(param)
+		}
+	}
+	return Success(nil)
+}
