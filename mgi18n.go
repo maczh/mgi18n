@@ -122,7 +122,11 @@ func SuccessWithPage(data interface{}, count, index, size, total int) mgresult.R
 //String 将messageId根据当前协程X-Lang参数转换成当前语言字符串
 func String(messageId string) string {
 	lang := mgerr.GetCurrentLanguage()
-	return GetXLangString(messageId, lang)
+	s := GetXLangString(messageId, lang)
+	if s != "" {
+		return s
+	}
+	return messageId
 }
 
 //Format 格式化数据，messageId对应的内容为带{}的模板
