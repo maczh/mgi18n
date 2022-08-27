@@ -3,11 +3,11 @@ module github.com/maczh/mgi18n
 go 1.17
 
 require (
-	github.com/maczh/gintool v1.0.7
-	github.com/maczh/logs v1.0.3
+	github.com/maczh/gintool v1.0.8
+	github.com/maczh/logs v1.0.4
 	github.com/maczh/mgcache v1.0.1
-	github.com/maczh/mgcall v1.0.8
-	github.com/maczh/mgconfig v1.1.8
+	github.com/maczh/mgcall v1.1.0
+	github.com/maczh/mgconfig v1.1.11
 	github.com/maczh/mgerr v1.0.6
 	github.com/maczh/utils v1.0.9
 	gopkg.in/mgo.v2 v2.0.0-20190816093944-a6b53ec6cb22
